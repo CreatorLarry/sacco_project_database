@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -8,7 +9,7 @@ from app.models import Customer, Deposit
 
 # Create your views here.
 def test(request):
-    # save a customer. Commented line sice it has already been saved in data base
+    # save a customer. Commented line sice it has already been saved in database
     c1 = Customer(first_name='Mary', last_name='Jane', email='mj@gmail.com', dob='2000-11-23', gender='Female',
                   weight=62)
     c1.save()
@@ -69,9 +70,7 @@ def add_customers(request):
         form = CustomerForm()
         return render(request, 'customer_form.html', context={"form": form})
 
-# installing crispy forms
-# pip install django-crispy-forms
-# pip install crispy-bootstrap5
+
 def update_customer(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':
@@ -83,3 +82,20 @@ def update_customer(request, customer_id):
     else:
         form = CustomerForm(instance=customer)
         return render(request, 'customer_update_form.html', context={"form": form})
+
+
+def search_customer(request):
+    search_term = request.GET.get('search')
+    data = Customer.objects.filter(
+        Q(first_name__icontains=search_term) | Q(last_name__icontains=search_term) | Q(email__icontains=search_term))
+    paginator = Paginator(data, 15)
+    page_number = request.GET.get('page', 1)
+    try:
+        paginated_data = paginator.page(page_number)
+    except PageNotAnInteger | EmptyPage:
+        paginated_data = paginator.page(1)
+    return render(request, "search.html", context={"customers": data})
+
+# installing crispy forms
+# pip install django-crispy-forms
+# pip install crispy-bootstrap5
