@@ -28,9 +28,13 @@
                     <td>
                         <a href="{% url 'remove_customer' customer.id %}" class="btn btn-danger btn-sm">Remove</a>
                     </td>
-                    
+
                     <td>
                         <a href="{% url 'customer_details' customer.id %}" class="btn btn-primary bt-sm ">Details</a>
+                    </td>
+
+                    <td>
+                        <a href="{% url 'update_customer' customer.id %}" class="btn btn-secondary bt-sm ">Update</a>
                     </td>
                 </tr>
             {% empty %}
@@ -44,13 +48,13 @@
                     <a class="btn btn-outline-info btn-sm" href="?page={{ data.previous_page_number }}"> << </a>
 
                 {% endif %}
-                <span class="mx-3" >{{ data.number }}</span>
+                <span class="mx-3">{{ data.number }}</span>
 
                 {% if data.has_next %}
                     <a class="btn btn-outline-info btn-sm" href="?page={{ data.next_page_number }}"> >> </a>
 
                 {% endif %}
-                
+
             </div>
         </div>
     </div>

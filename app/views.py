@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from app.app_forms import CustomerForm
 from app.models import Customer, Deposit
@@ -35,7 +35,7 @@ def customers(request):
     data = Customer.objects.all().order_by(
         '-id').values()  # ORM-object relational marker select everything from customers
     # create a paginator
-    paginator = Paginator(data, 8)
+    paginator = Paginator(data, 15)
     page_number = request.GET.get('page', 1)
     try:
         paginated_data = paginator.page(page_number)
@@ -72,3 +72,14 @@ def add_customers(request):
 # installing crispy forms
 # pip install django-crispy-forms
 # pip install crispy-bootstrap5
+def update_customer(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('customers')
+
+    else:
+        form = CustomerForm(instance=customer)
+        return render(request, 'customer_update_form.html', context={"form": form})
