@@ -2,6 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
+from app.app_forms import CustomerForm
 from app.models import Customer, Deposit
 
 
@@ -22,7 +23,7 @@ def test(request):
     c1 = Customer.objects.get(id=1)  # select * from customers where id=1
     print(c1)
 
-# fetch deposits
+    # fetch deposits
     d1 = Deposit(amount=10000, status=True, customer=c1)
     d1.save()
     num_of_deposits = Deposit.objects.count()
@@ -31,7 +32,8 @@ def test(request):
 
 
 def customers(request):
-    data = Customer.objects.all().order_by('id').values() # ORM-object relational marker select everything from customers
+    data = Customer.objects.all().order_by(
+        '-id').values()  # ORM-object relational marker select everything from customers
     # create a paginator
     paginator = Paginator(data, 8)
     page_number = request.GET.get('page', 1)
@@ -41,10 +43,12 @@ def customers(request):
         paginated_data = paginator.page(1)
 
     return render(request, 'customers.html', {'data': paginated_data})
+
+
 # render is to request
 def remove_customer(request, customer_id):
-    customer = Customer.objects.get(id=customer_id) # select everything from customer where id=7
-    customer.delete() # delete from customers where id=7
+    customer = Customer.objects.get(id=customer_id)  # select everything from customer where id=7
+    customer.delete()  # delete from customers where id=7
     return redirect('customers')
 
 
@@ -52,3 +56,19 @@ def customer_details(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
     deposits = Deposit.objects.filter(customer_id=customer_id)
     return render(request, "details.html", {'deposits': deposits, 'customer': customer})
+
+
+def add_customers(request):
+    if request.method == 'POST':
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('customers')
+
+    else:
+        form = CustomerForm()
+        return render(request, 'customer_form.html', context={"form": form})
+
+# installing crispy forms
+# pip install django-crispy-forms
+# pip install crispy-bootstrap5

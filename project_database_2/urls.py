@@ -22,6 +22,8 @@ from app import views
 urlpatterns = [
     path('', views.customers, name='customers'),
 
+    path('add/customer', views.add_customers, name='add_customers'),
+
     path('customer/remove/<int:customer_id>', views.remove_customer, name='remove_customer'),
 
     path('customer/details/<int:customer_id>', views.customer_details, name='customer_details'),

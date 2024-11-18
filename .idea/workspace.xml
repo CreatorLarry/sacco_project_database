@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52808215-867b-4017-83fa-d3993041d381" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/static/profile.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/details.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/details.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/master.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/master.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,8 +41,8 @@
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/larry/PycharmProjects/project_database_2/app/static",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/larry/Desktop/Web-Projects/Portfolio",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -108,7 +104,7 @@
       <workItem from="1731559893916" duration="7845000" />
       <workItem from="1731582997355" duration="1592000" />
       <workItem from="1731648062654" duration="1106000" />
-      <workItem from="1731649211207" duration="17776000" />
+      <workItem from="1731649211207" duration="19617000" />
     </task>
     <servers />
   </component>
