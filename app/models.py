@@ -1,5 +1,16 @@
-from django.core.management.commands import makemigrations
+import os
+import uuid
+
 from django.db import models
+
+
+# generating random numbers for profile picture
+def generate_unique_name(instance, filename):
+    # kenya.png
+    name = str(uuid.uuid4())  #
+    full_file_name = f'{name}-{filename}'
+    return os.path.join("profile_pictures", full_file_name)
+
 
 # Create your models here.
 class Customer(models.Model):
@@ -10,6 +21,8 @@ class Customer(models.Model):
     gender = models.CharField(max_length=10)
     weight = models.IntegerField(default=0)
 
+    # profile picture
+    profile_pic = models.ImageField(upload_to=generate_unique_name, null=True)
     # important to keep track of time for creation and update
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -17,14 +30,14 @@ class Customer(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} {self.email} "
 
-
     class Meta:
         db_table = 'customers'
+
 
 class Deposit(models.Model):
     amount = models.IntegerField()
     status = models.BooleanField(default=False)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="deposits")
 
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)

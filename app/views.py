@@ -1,22 +1,23 @@
+from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from app.app_forms import CustomerForm
+from app.app_forms import CustomerForm, DepositForm
 from app.models import Customer, Deposit
 
 
 # Create your views here.
 def test(request):
     # save a customer. Commented line sice it has already been saved in database
-    c1 = Customer(first_name='Mary', last_name='Jane', email='mj@gmail.com', dob='2000-11-23', gender='Female',
-                  weight=62)
-    c1.save()
-
-    c2 = Customer(first_name='John', last_name='Smith', email='johnsmith@gmail.com', dob='1997-06-13', gender='Male',
-                  weight=62)
-    c2.save()
+    # c1 = Customer(first_name='Mary', last_name='Jane', email='mj@gmail.com', dob='2000-11-23', gender='Female',
+    #               weight=62)
+    # c1.save()
+    #
+    # c2 = Customer(first_name='John', last_name='Smith', email='johnsmith@gmail.com', dob='1997-06-13', gender='Male',
+    #               weight=62)
+    # c2.save()
 
     num_of_customers = Customer.objects.count()
 
@@ -50,38 +51,42 @@ def customers(request):
 def remove_customer(request, customer_id):
     customer = Customer.objects.get(id=customer_id)  # select everything from customer where id=7
     customer.delete()  # delete from customers where id=7
+    messages.warning(request, f'Customer {customer.first_name} successfully deleted!')
     return redirect('customers')
 
 
 def customer_details(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
-    deposits = Deposit.objects.filter(customer_id=customer_id)
-    return render(request, "details.html", {'deposits': deposits, 'customer': customer})
+    deposits = customer.deposits.all()
+    total = Deposit.objects.filter(customer=customer).filter(status=True).aggregate(Sum('amount'))['amount__sum']
+    return render(request, "details.html", {'customer': customer, 'deposits': deposits, 'total': total})
 
 
 def add_customers(request):
     if request.method == 'POST':
-        form = CustomerForm(request.POST)
+        form = CustomerForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            messages.success(request, f"Customer {form.cleaned_data['first_name']} successfully added!")
             return redirect('customers')
 
     else:
         form = CustomerForm()
-        return render(request, 'customer_form.html', context={"form": form})
+    return render(request, 'customer_form.html', context={"form": form})
 
 
 def update_customer(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':
-        form = CustomerForm(request.POST, instance=customer)
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
         if form.is_valid():
             form.save()
+            messages.info(request, f"Customer {form.cleaned_data['first_name']} successfully updated!")
             return redirect('customers')
 
     else:
         form = CustomerForm(instance=customer)
-        return render(request, 'customer_update_form.html', context={"form": form})
+    return render(request, 'customer_update_form.html', context={"form": form})
 
 
 def search_customer(request):
@@ -94,8 +99,25 @@ def search_customer(request):
         paginated_data = paginator.page(page_number)
     except PageNotAnInteger | EmptyPage:
         paginated_data = paginator.page(1)
-    return render(request, "search.html", context={"customers": data})
+    return render(request, "search.html", {'data': paginated_data})
+
+
+def deposit(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.method == 'POST':
+        form = DepositForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            depo = Deposit(amount=amount, status=True, customer=customer)
+            depo.save()
+            messages.success(request, 'Your deposit has been successfully updated')
+            return redirect('customers')
+
+    else:
+        form = DepositForm()
+    return render(request, 'deposit_form.html', {"form": form, "customer": customer})
 
 # installing crispy forms
 # pip install django-crispy-forms
 # pip install crispy-bootstrap5
+# pip install Pillow

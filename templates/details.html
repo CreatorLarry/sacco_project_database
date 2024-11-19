@@ -46,11 +46,23 @@
                         <td>{{ customer.weight }}</td>
                     </tr>
 
+                    <tr>
+
+                        <td class="h6">Total Deposit</td>
+                        <td>{{ total }}</td>
+                    </tr>
+
                 </table>
             </div>
 
             <div class="col-sm-4">
-                <img src="{% static 'profile.png' %}" alt="profile_holder">
+                <p class="text-center">Profile Picture</p>
+                {% if customer.profile_pic %}
+                	<img class="img-fluid mx-auto d-block profile rounded-img" src="{{ customer.profile_pic.url }}" alt="profile_holder">
+                {% else %}
+                	<img class="img-fluid mx-auto d-block profile rounded-img" src="{% static 'profile.png' %}" alt="profile_holder">
+                {% endif %} 
+                
             </div>
 
             <div class="col-sm-4">
@@ -64,9 +76,8 @@
                         <tr>
                             <td>{{ depo.created_at | date:"d-m-Y" }}</td>
                             <td>{{ depo.amount }}</td>
-                            <td>{{ depo.status }}</td>
+                            <td>SUCCESSFUL</td>
                         </tr>
-
                     {% endfor %}
 
                 </table>
