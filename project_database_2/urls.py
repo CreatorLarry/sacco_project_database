@@ -36,6 +36,10 @@ urlpatterns = [
 
     path('customer/details/<int:customer_id>', views.customer_details, name='customer_details'),
 
+    path('login', views.login_user, name='login'),
+
+    path('logout', views.logout_user, name='logout'),
+
     # path('statistics', views.statistics, name='statistics'),
     #
     # path('transactions', views.transactions, name='transactions'),

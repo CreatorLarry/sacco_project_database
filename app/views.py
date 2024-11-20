@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from app.app_forms import CustomerForm, DepositForm
+from app.app_forms import CustomerForm, DepositForm, LoginForm
 from app.models import Customer, Deposit
 
 
@@ -33,6 +35,7 @@ def test(request):
     return HttpResponse(f"Current number of customers: {num_of_customers} & Current deposit: {num_of_deposits}")
 
 
+@login_required  # decorator
 def customers(request):
     data = Customer.objects.all().order_by(
         '-id').values()  # ORM-object relational marker select everything from customers
@@ -48,6 +51,7 @@ def customers(request):
 
 
 # render is to request
+@login_required
 def remove_customer(request, customer_id):
     customer = Customer.objects.get(id=customer_id)  # select everything from customer where id=7
     customer.delete()  # delete from customers where id=7
@@ -55,6 +59,7 @@ def remove_customer(request, customer_id):
     return redirect('customers')
 
 
+@login_required
 def customer_details(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
     deposits = customer.deposits.all()
@@ -62,6 +67,7 @@ def customer_details(request, customer_id):
     return render(request, "details.html", {'customer': customer, 'deposits': deposits, 'total': total})
 
 
+@login_required
 def add_customers(request):
     if request.method == 'POST':
         form = CustomerForm(request.POST, request.FILES)
@@ -75,6 +81,7 @@ def add_customers(request):
     return render(request, 'customer_form.html', context={"form": form})
 
 
+@login_required
 def update_customer(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':
@@ -89,6 +96,7 @@ def update_customer(request, customer_id):
     return render(request, 'customer_update_form.html', context={"form": form})
 
 
+@login_required
 def search_customer(request):
     search_term = request.GET.get('search')
     data = Customer.objects.filter(
@@ -102,6 +110,7 @@ def search_customer(request):
     return render(request, "search.html", {'data': paginated_data})
 
 
+@login_required
 def deposit(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':
@@ -116,6 +125,30 @@ def deposit(request, customer_id):
     else:
         form = DepositForm()
     return render(request, 'deposit_form.html', {"form": form, "customer": customer})
+
+
+def login_user(request):
+    if request.method == 'GET':
+        form = LoginForm()
+        return render(request, "login_form.html", {"form": form})
+    elif request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)  # sessions # cookies
+                return redirect('customers')
+        messages.warning(request, 'Invalid username or password.')
+        # return redirect(login_user)
+        return render(request, "login_form.html", {"form": form})
+
+
+@login_required
+def logout_user(request):
+    logout(request)
+    return redirect('login')
 
 # installing crispy forms
 # pip install django-crispy-forms
