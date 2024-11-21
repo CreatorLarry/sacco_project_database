@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q, Sum
 from django.http import HttpResponse
@@ -52,6 +52,7 @@ def customers(request):
 
 # render is to request
 @login_required
+@permission_required("app.delete_customer", raise_exception=True)
 def remove_customer(request, customer_id):
     customer = Customer.objects.get(id=customer_id)  # select everything from customer where id=7
     customer.delete()  # delete from customers where id=7
@@ -60,6 +61,7 @@ def remove_customer(request, customer_id):
 
 
 @login_required
+@permission_required("app.view_customer", raise_exception=True)
 def customer_details(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
     deposits = customer.deposits.all()
@@ -68,6 +70,7 @@ def customer_details(request, customer_id):
 
 
 @login_required
+@permission_required("app.add_customer", raise_exception=True)
 def add_customers(request):
     if request.method == 'POST':
         form = CustomerForm(request.POST, request.FILES)
@@ -82,6 +85,7 @@ def add_customers(request):
 
 
 @login_required
+@permission_required("app.change_customer", raise_exception=True)
 def update_customer(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':
@@ -97,6 +101,7 @@ def update_customer(request, customer_id):
 
 
 @login_required
+@permission_required("app.view_customer", raise_exception=True)
 def search_customer(request):
     search_term = request.GET.get('search')
     data = Customer.objects.filter(
@@ -111,6 +116,7 @@ def search_customer(request):
 
 
 @login_required
+@permission_required("app.add_deposit", raise_exception=True)
 def deposit(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':

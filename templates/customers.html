@@ -14,35 +14,60 @@
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Joining date</th>
-                <th>Delete</th>
-                <th>Details</th>
-                <th>Update</th>
-                <th>Deposit</th>
+
+                {% if perms.app.delete_customer %}
+                    <th>Delete</th>
+                {% endif %}
+
+                {% if perms.app.delete_customer %}
+                    <th>Details</th>
+                {% endif %}
+
+                {% if perms.app.delete_customer %}
+                    <th>Update</th>
+                {% endif %}
+
+                {% if perms.app.delete_customer %}
+                    <th>Deposit</th>
+                {% endif %}
+
             </tr>
 
             {% for customer in data.object_list %}
                 <tr>
-                    <td>{{ customer.id }}</td>
-                    <td>{{ customer.first_name }}</td>
-                    <td>{{ customer.last_name }}</td>
-                    <td>{{ customer.email }}</td>
-                    <td>{{ customer.created_at }}</td>
+                <td>{{ customer.id }}</td>
+                <td>{{ customer.first_name }}</td>
+                <td>{{ customer.last_name }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.created_at }}</td>
+
+                {% if perms.app.delete_customer %}
                     <td>
                         <a href="{% url 'remove_customer' customer.id %}" class="btn btn-danger btn-sm">Remove</a>
                     </td>
+                {% endif %}
 
+                {% if perms.app.customer_details %}
                     <td>
                         <a href="{% url 'customer_details' customer.id %}" class="btn btn-info bt-sm ">Details</a>
                     </td>
+                {% endif %}
 
+
+                {% if perms.app.update_customer %}
                     <td>
-                        <a href="{% url 'update_customer' customer.id %}" class="btn btn-secondary bt-sm ">Update</a>
+                        <a href="{% url 'update_customer' customer.id %}"
+                           class="btn btn-secondary bt-sm ">Update</a>
                     </td>
+                {% endif %}
 
+                {% if perms.app.deposit %}
                     <td>
                         <a href="{% url 'deposit' customer.id %}" class="btn btn-primary bt-sm ">Deposit</a>
                     </td>
-                </tr>
+                {% endif %}
+
+
             {% empty %}
                 <p>No customers in the sacco</p>
             {% endfor %}
